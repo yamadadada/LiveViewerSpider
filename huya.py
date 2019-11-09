@@ -66,6 +66,7 @@ def travel_huya(data, limit):
     page = 1
     total = 0
     retry = 0
+    limit_count = 0
     #  遍历页数
     while True:
         params = huya_params
@@ -82,14 +83,19 @@ def travel_huya(data, limit):
                 break
             for j in r.json()['data']['datas']:
                 online = int(j['totalCount'])
-                # 超过最低限制，结束该游戏遍历
+                # 超过最低限制，记录次数，超过3次结束该游戏遍历
                 if online < limit:
-                    return total
-                # y = 8000 / (x / 10000 - 1.97) + 52，人气/y = 人数
-                total += online / (8000 / (online / 10000 - 1.97) + 52)
+                    limit_count += 1
+                    if limit_count > 3:
+                        print('huya遍历完成，已遍历' + str(page) + '页')
+                        return total
+                else:
+                    # y = 8000 / (x / 10000 - 1.97) + 52，人气/y = 人数
+                    total += online / (8000 / (online / 10000 - 1.97) + 52)
         except Exception:
             retry += 1
             continue
         page = page + 1
         retry = 0
+    print('huya遍历完成，已遍历' + str(page) + '页')
     return total

@@ -61,6 +61,7 @@ def travel_bilibili(data, limit):
     i = 1
     total = 0
     retry = 0
+    limit_count = 0
     # 遍历页数
     while True:
         params = bilibili_params
@@ -79,14 +80,19 @@ def travel_bilibili(data, limit):
             # 遍历每一页的人数
             for j in r.json()['data']:
                 online = j['online']
-                # 超过最低限制，结束该游戏遍历
+                # 超过最低限制，记录次数，超过3次结束该游戏遍历
                 if online < limit:
-                    return total
-                # y4 = 14x + 10000，人气/y = 人数
-                total += online / math.pow(14 * online + 10000, 1.0 / 4)
+                    limit_count += 1
+                    if limit_count > 3:
+                        print('bilibili遍历完成，已遍历' + str(i) + '页')
+                        return total
+                else:
+                    # y4 = 14x + 10000，人气/y = 人数
+                    total += online / math.pow(14 * online + 10000, 1.0 / 4)
         except Exception:
             retry += 1
             continue
         i = i + 1
         retry = 0
+    print('bilibili遍历完成，已遍历' + str(i) + '页')
     return total

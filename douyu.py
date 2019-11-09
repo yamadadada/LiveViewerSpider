@@ -82,10 +82,11 @@ def travel_douyu(data, limit):
             # 遍历单独一页的人数
             for j in r.json()['data']['rl']:
                 online = j['ol']
-                # 超过最低限制，记录次数，达到3次结束该游戏遍历
+                # 超过最低限制，记录次数，超过3次结束该游戏遍历
                 if online < limit:
                     limit_count += 1
-                    if limit_count >= 3:
+                    if limit_count > 3:
+                        print('douyu遍历完成，已遍历' + str(i) + '页')
                         return total
                 else:
                     # y = 10000 / (x / 10000 + 19.9) + 10，人气/y = 人数
@@ -97,6 +98,7 @@ def travel_douyu(data, limit):
             continue
         i = i + 1
         retry = 0
+    print('douyu遍历完成，已遍历' + str(i) + '页')
     return total
 
 

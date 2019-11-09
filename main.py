@@ -72,6 +72,7 @@ for game_info in games:
     douyu_total += item['douyu']
     huya_total += item['huya']
     item['total'] = item['bilibili'] + item['douyu'] + item['huya']
+    print("---------------------------------------")
     all_total += item['total']
     # 如果为0，则不再遍历该游戏，并记录到日志
     if item['total'] == 0:
