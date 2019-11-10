@@ -79,6 +79,8 @@ def travel_douyu(data, limit):
             page = r.json()['data']['pgcnt']
             if page == 0:
                 break
+            if not r.json()['data']['rl']:
+                break
             # 遍历单独一页的人数
             for j in r.json()['data']['rl']:
                 online = j['ol']
@@ -91,7 +93,7 @@ def travel_douyu(data, limit):
                 else:
                     # y = 10000 / (x / 10000 + 19.9) + 10，人气/y = 人数
                     total += online / (10000 / (online / 10000 + 19.9) + 10)
-            if i == page:
+            if i >= page:
                 break
         except Exception:
             retry += 1
