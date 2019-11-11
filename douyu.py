@@ -69,35 +69,35 @@ def travel_douyu(data, limit):
     limit_count = 0
     # 遍历页数
     while True:
+        if retry > 10:
+            filename = os.path.dirname(__file__) + "/error.txt"
+            with open(filename, "a") as f:
+                f.writelines("douyu遍历【" + data + "】第" + i + "页10次仍失败，取消遍历\n")
+            break
         try:
-            if retry > 10:
-                filename = os.path.dirname(__file__) + "/error.txt"
-                with open(filename, "a") as f:
-                    f.writelines("douyu遍历【" + data + "】第" + i + "页10次仍失败，取消遍历\n")
-                break
             r = requests.get(douyu_url + data + "/" + str(i), headers=headers, timeout=5)
-            page = r.json()['data']['pgcnt']
-            if page == 0:
-                break
-            if not r.json()['data']['rl']:
-                break
-            # 遍历单独一页的人数
-            for j in r.json()['data']['rl']:
-                online = j['ol']
-                # 超过最低限制，记录次数，超过3次结束该游戏遍历
-                if online < limit:
-                    limit_count += 1
-                    if limit_count > 3:
-                        print('douyu遍历完成，已遍历' + str(i) + '页')
-                        return total
-                else:
-                    # y = 10000 / (x / 10000 + 19.9) + 10，人气/y = 人数
-                    total += online / (10000 / (online / 10000 + 19.9) + 10)
-            if i >= page:
-                break
         except Exception:
             retry += 1
             continue
+        page = r.json()['data']['pgcnt']
+        if page == 0 or i > page:
+            break
+        if not r.json()['data']['rl']:
+            break
+        # 遍历单独一页的人数
+        for j in r.json()['data']['rl']:
+            online = int(j['ol'])
+            # 超过最低限制，记录次数，超过3次结束该游戏遍历
+            if online < limit:
+                limit_count += 1
+                if limit_count > 3:
+                    print('douyu遍历完成，已遍历' + str(i) + '页')
+                    return total
+            else:
+                # y = 10000 / (x / 10000 + 19.9) + 10，人气/y = 人数
+                total += online / (10000 / (online / 10000 + 19.9) + 10)
+        if i >= page:
+            break
         i = i + 1
         retry = 0
     print('douyu遍历完成，已遍历' + str(i) + '页')
