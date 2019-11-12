@@ -1,6 +1,7 @@
 import requests
 from config import connect_db
 import os
+import time
 
 headers = {'User-Agent': 'User-Agent:Mozilla/5.0'}
 
@@ -76,7 +77,7 @@ def travel_huya(data, limit):
             if retry > 10:
                 filename = os.path.dirname(__file__) + "/error.txt"
                 with open(filename, "a") as f:
-                    f.writelines("huya遍历【" + data + "】第" + page + "页10次仍失败，取消遍历\n")
+                    f.writelines("huya遍历【" + data + "】第" + str(page) + "页10次仍失败，取消遍历\n")
                 break
             r = requests.get(huya_url, params, headers=headers, timeout=5)
             if not r.json()['data']['datas']:
@@ -94,6 +95,7 @@ def travel_huya(data, limit):
                     total += online / (8000 / (online / 10000 - 1.97) + 52)
         except Exception:
             retry += 1
+            time.sleep(5)
             continue
         page = page + 1
         retry = 0

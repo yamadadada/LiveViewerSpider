@@ -2,6 +2,7 @@ import requests
 from config import connect_db
 import os
 import math
+import time
 
 headers = {'User-Agent': 'User-Agent:Mozilla/5.0'}
 
@@ -71,7 +72,7 @@ def travel_bilibili(data, limit):
             if retry > 10:
                 filename = os.path.dirname(__file__) + "/error.txt"
                 with open(filename, "a") as f:
-                    f.writelines("bili遍历【" + data + "】第" + i + "页10次仍失败，取消遍历\n")
+                    f.writelines("bili遍历【" + data + "】第" + str(i) + "页10次仍失败，取消遍历\n")
                 break
             r = requests.get(bilibili_url, params, headers=headers, timeout=5)
             # 判空，结束循环
@@ -91,6 +92,7 @@ def travel_bilibili(data, limit):
                     total += online / math.pow(14 * online + 10000, 1.0 / 4)
         except Exception:
             retry += 1
+            time.sleep(5)
             continue
         i = i + 1
         retry = 0
