@@ -68,6 +68,8 @@ def travel_douyu(data, limit):
     total = 0
     retry = 0
     limit_count = 0
+    # 存档功能，用于检错
+    archives = []
     # 遍历页数
     while True:
         if retry > 10:
@@ -81,6 +83,7 @@ def travel_douyu(data, limit):
             retry += 1
             time.sleep(5)
             continue
+        archives.append(r.json())
         page = r.json()['data']['pgcnt']
         if page == 0 or i > page:
             break
@@ -94,6 +97,16 @@ def travel_douyu(data, limit):
                 limit_count += 1
                 if limit_count > 3:
                     print('douyu遍历完成，已遍历' + str(i) + '页')
+                    # 数据存疑，记录日志
+                    if total >=1500000:
+                        filename = os.path.dirname(__file__) + "/douyuerror.txt"
+                        with open(filename, "a") as f:
+                            for archive in archives:
+                                f.write(str(archive).encode("gbk", "ignore").decode("gbk"))
+                                f.write("\n")
+                                f.write("\n")
+                                f.write("-------------------------------------------------------------\n")
+                                f.write("\n")
                     return total
             else:
                 # y = 10000 / (x / 10000 + 19.9) + 10，人气/y = 人数
@@ -103,6 +116,15 @@ def travel_douyu(data, limit):
         i = i + 1
         retry = 0
     print('douyu遍历完成，已遍历' + str(i) + '页')
+    if total >= 1500000:
+        filename = os.path.dirname(__file__) + "/douyuerror.txt"
+        with open(filename, "a") as f:
+            for archive in archives:
+                f.write(str(archive).encode("gbk", "ignore").decode("gbk"))
+                f.write("\n")
+                f.write("\n")
+                f.write("-------------------------------------------------------------\n")
+                f.write("\n")
     return total
 
 
