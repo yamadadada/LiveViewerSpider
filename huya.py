@@ -77,7 +77,7 @@ def travel_huya(data, limit):
             if retry > 10:
                 filename = os.path.dirname(__file__) + "/error.txt"
                 with open(filename, "a") as f:
-                    f.writelines("huya遍历【" + data + "】第" + str(page) + "页10次仍失败，取消遍历\n")
+                    f.write("huya遍历【" + data + "】第" + str(page) + "页10次仍失败，取消遍历\n")
                 break
             r = requests.get(huya_url, params, headers=headers, timeout=5)
             if not r.json()['data']['datas']:
@@ -91,8 +91,8 @@ def travel_huya(data, limit):
                         print('huya遍历完成，已遍历' + str(page) + '页')
                         return total
                 else:
-                    # y = 8000 / (x / 10000 - 1.97) + 52，人气/y = 人数
-                    total += online / (8000 / (online / 10000 - 1.97) + 52)
+                    # y = 3000 / (x / 10000 - 3.24) + 50，人气/y = 人数
+                    total += online / (3000 / (online / 10000 - 3.24) + 50)
         except Exception:
             retry += 1
             time.sleep(5)

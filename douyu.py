@@ -75,7 +75,7 @@ def travel_douyu(data, limit):
         if retry > 10:
             filename = os.path.dirname(__file__) + "/error.txt"
             with open(filename, "a") as f:
-                f.writelines("douyu遍历【" + data + "】第" + str(i) + "页10次仍失败，取消遍历\n")
+                f.write("douyu遍历【" + data + "】第" + str(i) + "页10次仍失败，取消遍历\n")
             break
         try:
             r = requests.get(douyu_url + data + "/" + str(i), headers=headers, timeout=5)
@@ -97,16 +97,6 @@ def travel_douyu(data, limit):
                 limit_count += 1
                 if limit_count > 3:
                     print('douyu遍历完成，已遍历' + str(i) + '页')
-                    # 数据存疑，记录日志
-                    if total >=1500000:
-                        filename = os.path.dirname(__file__) + "/douyuerror.txt"
-                        with open(filename, "a") as f:
-                            for archive in archives:
-                                f.write(str(archive).encode("gbk", "ignore").decode("gbk"))
-                                f.write("\n")
-                                f.write("\n")
-                                f.write("-------------------------------------------------------------\n")
-                                f.write("\n")
                     return total
             else:
                 # y = 10000 / (x / 10000 + 19.9) + 10，人气/y = 人数
@@ -116,15 +106,6 @@ def travel_douyu(data, limit):
         i = i + 1
         retry = 0
     print('douyu遍历完成，已遍历' + str(i) + '页')
-    if total >= 1500000:
-        filename = os.path.dirname(__file__) + "/douyuerror.txt"
-        with open(filename, "a") as f:
-            for archive in archives:
-                f.write(str(archive).encode("gbk", "ignore").decode("gbk"))
-                f.write("\n")
-                f.write("\n")
-                f.write("-------------------------------------------------------------\n")
-                f.write("\n")
     return total
 
 

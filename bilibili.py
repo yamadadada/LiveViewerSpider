@@ -72,7 +72,7 @@ def travel_bilibili(data, limit):
             if retry > 10:
                 filename = os.path.dirname(__file__) + "/error.txt"
                 with open(filename, "a") as f:
-                    f.writelines("bili遍历【" + data + "】第" + str(i) + "页10次仍失败，取消遍历\n")
+                    f.write("bili遍历【" + data + "】第" + str(i) + "页10次仍失败，取消遍历\n")
                 break
             r = requests.get(bilibili_url, params, headers=headers, timeout=5)
             # 判空，结束循环

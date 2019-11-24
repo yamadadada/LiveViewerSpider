@@ -68,6 +68,16 @@ for game_info in games:
             thread.start()
     for i in range(len(threads)):
         threads[i].join()
+
+    # douyu验错机制
+    if item['huya'] > 50000 and item['douyu'] > 6 * item['huya']:
+        pre_data = item['douyu']
+        item['douyu'] = 6 * item['huya']
+        filename = os.path.dirname(__file__) + "/douyuerror.txt"
+        with open(filename, "a") as f:
+            f.write("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "][" + str(game_id) + "]" + game_name +
+                    "数据有误，修正前数据为：" + str(pre_data) + ", 修正后数据为：" + str(item['douyu']) + "\n")
+
     bili_total += item['bilibili']
     douyu_total += item['douyu']
     huya_total += item['huya']
@@ -78,7 +88,7 @@ for game_info in games:
     if item['total'] == 0:
         filename = os.path.dirname(__file__) + "/log.txt"
         with open(filename, "a") as f:
-            f.writelines("[" + str(game_id) + "]" + game_name + "遍历结果为空，以后不再遍历[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "]\n")
+            f.write("[" + str(game_id) + "]" + game_name + "遍历结果为空，以后不再遍历[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "]\n")
         sql = "update init set status=1 where gid=" + str(game_id)
         cursor.execute(sql)
     # 插入数据库
