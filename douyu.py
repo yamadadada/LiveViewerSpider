@@ -99,8 +99,8 @@ def travel_douyu(data, limit):
                     print('douyu遍历完成，已遍历' + str(i) + '页')
                     return total
             else:
-                # y = 10000 / (x / 10000 + 19.9) + 10，人气/y = 人数
-                total += online / (10000 / (online / 10000 + 19.9) + 10)
+                # y = 5000 / (x / 10000 + 9.7) + 10，人气/y = 人数
+                total += online / (5000 / (online / 10000 + 9.7) + 10)
         if i >= page:
             break
         i = i + 1
