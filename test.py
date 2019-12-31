@@ -1,8 +1,6 @@
 from douyu import travel_douyu
 import math
+import random
 
-online = 2500000
-a = online / (5000 / (online / 10000 + 9.7) + 10)
-b = online / (4000 / (online / 10000 - 2.99) + 50)
-print(a)
-print(b)
+list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print(random.sample(list, k=2))

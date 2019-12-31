@@ -6,6 +6,7 @@ from huya import travel_huya
 import os
 import datetime
 import threading
+import random
 
 
 bilibili_limit = 100
@@ -28,9 +29,22 @@ db = connect_db()
 db.autocommit(True)
 cursor = db.cursor()
 # 查出各游戏的参数,status为0表示遍历，为1表示不再遍历
-sql = "select bilibili,douyu,huya,game,gid from init where status=0"
+sql = "select bilibili, douyu, huya, game, gid, status from init where status <= 3"
 cursor.execute(sql)
 games = cursor.fetchall()
+
+# 查出已不再遍历的游戏
+sql = "select bilibili, douyu, huya, game, gid, status from init where status > 3"
+cursor.execute(sql)
+remain_games = cursor.fetchall()
+# 抽取10％的游戏做复活处理
+resurrection_list = random.sample(remain_games, k=int(len(remain_games) * 0.0625))
+print("本次共对" + str(len(resurrection_list)) + "个游戏做复活尝试：")
+for r in resurrection_list:
+    print("【" + str(r[4]) + "】" + str(r[3]))
+print("---------------------------------------")
+games = games + tuple(resurrection_list)
+
 all_total = 0
 bili_total = 0
 douyu_total = 0
@@ -39,6 +53,7 @@ for game_info in games:
     item = {'bilibili': 0, 'douyu': 0, 'huya': 0, 'total': 0}
     game_id = game_info[4]
     game_name = game_info[3]
+    status = int(game_info[5])
     # 使用最多3个线程遍历
     threads = []
     if game_info[0] is not None:
@@ -84,17 +99,28 @@ for game_info in games:
     item['total'] = item['bilibili'] + item['douyu'] + item['huya']
     print("---------------------------------------")
     all_total += item['total']
-    # 如果为0，则不再遍历该游戏，并记录到日志
+
+    # 如果为0，则记录一次失败次数，并记录到数据库中
     if item['total'] == 0:
-        filename = os.path.dirname(__file__) + "/log.txt"
-        with open(filename, "a") as f:
-            f.write("[" + str(game_id) + "]" + game_name + "遍历结果为空，以后不再遍历[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "]\n")
-        sql = "update init set status=1 where gid=" + str(game_id)
+        status += 1
+        sql = "update init set status = '{}' where gid='{}'".format(status, game_id)
         cursor.execute(sql)
+        # 如果次数超过3次，则不再遍历该游戏，并记录到日志
+        if status > 3:
+            filename = os.path.dirname(__file__) + "/log.txt"
+            with open(filename, "a") as f:
+                f.write("[" + str(game_id) + "]" + game_name + "遍历结果为空，以后不再遍历[" + datetime.datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S") + "]\n")
+    # 如果不为0且status不为0，则将status置为0
+    elif status > 0:
+        sql = "update init set status = 0 where gid='{}'".format(game_id)
+        cursor.execute(sql)
+
     # 插入数据库
     sql = "insert into result(gid, game_name, total, bilibili, douyu, huya) VALUES('{}', '{}', '{}', '{}', '{}', '{}')"\
         .format(game_id, game_name, item['total'], item['bilibili'], item['douyu'], item['huya'])
     cursor.execute(sql)
+
 # 总结
 travel_time = time.time() - pretime
 sql = "insert into summary(total, bili_total, douyu_total, huya_total, game_count, travel_time) VALUES('{}', '{}', '{}', '{}', '{}', '{}')"\
