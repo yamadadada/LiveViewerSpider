@@ -85,13 +85,15 @@ for game_info in games:
         threads[i].join()
 
     # douyu验错机制
-    if item['huya'] > 45000 and item['douyu'] > 5 * item['huya']:
-        pre_data = item['douyu']
-        item['douyu'] = 10 * item['huya']
-        filename = os.path.dirname(__file__) + "/douyuerror.txt"
-        with open(filename, "a") as f:
-            f.write("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "][" + str(game_id) + "]" + game_name +
-                    "数据有误，修正前数据为：" + str(pre_data) + ", 修正后数据为：" + str(item['douyu']) + "\n")
+    if item['huya'] > 40000:
+        limit = (90 / (item['huya'] / 10000 + 4)) * item['huya']
+        if item['douyu'] > limit:
+            pre_data = item['douyu']
+            item['douyu'] = limit
+            filename = os.path.dirname(__file__) + "/douyuerror.txt"
+            with open(filename, "a") as f:
+                f.write("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "][" + str(game_id) + "]" + game_name +
+                        "数据有误，修正前数据为：" + str(pre_data) + ", 修正后数据为：" + str(item['douyu']) + "\n")
 
     bili_total += item['bilibili']
     douyu_total += item['douyu']

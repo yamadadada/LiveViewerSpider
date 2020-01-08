@@ -91,8 +91,8 @@ def travel_huya(data, limit):
                         print('huya遍历完成，已遍历' + str(page) + '页')
                         return total
                 else:
-                    # y = 5500 / (x / 10000 - 2.61) + 50，人气/y = 人数
-                    total += online / (5500 / (online / 10000 - 2.61) + 50)
+                    # y = 6500 / (x / 10000 - 2.35) + 50，人气/y = 人数
+                    total += online / (6500 / (online / 10000 - 2.35) + 50)
         except Exception:
             retry += 1
             time.sleep(5)
