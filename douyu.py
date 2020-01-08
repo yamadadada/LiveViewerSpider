@@ -68,8 +68,6 @@ def travel_douyu(data, limit):
     total = 0
     retry = 0
     limit_count = 0
-    # 存档功能，用于检错
-    archives = []
     # 遍历页数
     while True:
         if retry > 10:
@@ -83,7 +81,6 @@ def travel_douyu(data, limit):
             retry += 1
             time.sleep(5)
             continue
-        archives.append(r.json())
         page = r.json()['data']['pgcnt']
         if page == 0 or i > page:
             break
@@ -99,8 +96,8 @@ def travel_douyu(data, limit):
                     print('douyu遍历完成，已遍历' + str(i) + '页')
                     return total
             else:
-                # y = 5500 / (x / 10000 + 10.72) + 10，人气/y = 人数
-                total += online / (5500 / (online / 10000 + 10.72) + 10)
+                # y = 7750 / (x / 10000 + 15.32) + 10，人气/y = 人数
+                total += online / (7750 / (online / 10000 + 15.32) + 10)
         if i >= page:
             break
         i = i + 1

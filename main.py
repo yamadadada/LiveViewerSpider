@@ -37,7 +37,7 @@ games = cursor.fetchall()
 sql = "select bilibili, douyu, huya, game, gid, status from init where status > 3"
 cursor.execute(sql)
 remain_games = cursor.fetchall()
-# 抽取10％的游戏做复活处理
+# 抽取6.25％的游戏做复活处理
 resurrection_list = random.sample(remain_games, k=int(len(remain_games) * 0.0625))
 print("本次共对" + str(len(resurrection_list)) + "个游戏做复活尝试：")
 for r in resurrection_list:
@@ -85,7 +85,7 @@ for game_info in games:
         threads[i].join()
 
     # douyu验错机制
-    if item['huya'] > 50000 and item['douyu'] > 10 * item['huya']:
+    if item['huya'] > 45000 and item['douyu'] > 5 * item['huya']:
         pre_data = item['douyu']
         item['douyu'] = 10 * item['huya']
         filename = os.path.dirname(__file__) + "/douyuerror.txt"
