@@ -85,7 +85,7 @@ for game_info in games:
         threads[i].join()
 
     # douyu验错机制
-    if item['huya'] > 40000:
+    if item['huya'] > 100:
         limit = (90 / (item['huya'] / 10000 + 4)) * item['huya']
         if item['douyu'] > limit:
             pre_data = item['douyu']
