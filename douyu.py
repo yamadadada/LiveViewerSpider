@@ -76,10 +76,10 @@ def travel_douyu(data, limit):
                 f.write("douyu遍历【" + data + "】第" + str(i) + "页10次仍失败，取消遍历\n")
             break
         try:
-            r = requests.get(douyu_url + data + "/" + str(i), headers=headers, timeout=5)
+            r = requests.get(douyu_url + data + "/" + str(i), headers=headers, timeout=1)
         except Exception:
             retry += 1
-            time.sleep(5)
+            time.sleep(1)
             continue
         page = r.json()['data']['pgcnt']
         if page == 0 or i > page:

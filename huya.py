@@ -79,7 +79,7 @@ def travel_huya(data, limit):
                 with open(filename, "a") as f:
                     f.write("huya遍历【" + data + "】第" + str(page) + "页10次仍失败，取消遍历\n")
                 break
-            r = requests.get(huya_url, params, headers=headers, timeout=5)
+            r = requests.get(huya_url, params, headers=headers, timeout=1)
             if not r.json()['data']['datas']:
                 break
             for j in r.json()['data']['datas']:
@@ -95,7 +95,7 @@ def travel_huya(data, limit):
                     total += online / (6500 / (online / 10000 - 2.35) + 50)
         except Exception:
             retry += 1
-            time.sleep(5)
+            time.sleep(1)
             continue
         page = page + 1
         retry = 0
