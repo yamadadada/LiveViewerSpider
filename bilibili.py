@@ -89,7 +89,8 @@ def travel_bilibili(data, limit):
                         return total
                 else:
                     # y4 = 14x + 10000，人气/y = 人数
-                    total += online / math.pow(14 * online + 10000, 1.0 / 4)
+                    # total += online / math.pow(14 * online + 10000, 1.0 / 4)
+                    total += online
         except Exception:
             retry += 1
             time.sleep(1)

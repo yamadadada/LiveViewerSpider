@@ -29,21 +29,21 @@ db = connect_db()
 db.autocommit(True)
 cursor = db.cursor()
 # 查出各游戏的参数,status为0表示遍历，为1表示不再遍历
-sql = "select bilibili, douyu, huya, game, gid, status from init where status <= 3"
+sql = "select bilibili, douyu, huya, game, gid, status from init where status <= 3 and bilibili is not null"
 cursor.execute(sql)
 games = cursor.fetchall()
 
-# 查出已不再遍历的游戏
-sql = "select bilibili, douyu, huya, game, gid, status from init where status > 3"
-cursor.execute(sql)
-remain_games = cursor.fetchall()
-# 抽取6.25％的游戏做复活处理
-resurrection_list = random.sample(remain_games, k=int(len(remain_games) * 0.0625))
-print("本次共对" + str(len(resurrection_list)) + "个游戏做复活尝试：")
-for r in resurrection_list:
-    print("【" + str(r[4]) + "】" + str(r[3]))
-print("---------------------------------------")
-games = games + tuple(resurrection_list)
+# # 查出已不再遍历的游戏
+# sql = "select bilibili, douyu, huya, game, gid, status from init where status > 3"
+# cursor.execute(sql)
+# remain_games = cursor.fetchall()
+# # 抽取6.25％的游戏做复活处理
+# resurrection_list = random.sample(remain_games, k=int(len(remain_games) * 0.0625))
+# print("本次共对" + str(len(resurrection_list)) + "个游戏做复活尝试：")
+# for r in resurrection_list:
+#     print("【" + str(r[4]) + "】" + str(r[3]))
+# print("---------------------------------------")
+# games = games + tuple(resurrection_list)
 
 all_total = 0
 bili_total = 0
@@ -65,35 +65,35 @@ for game_info in games:
             thread = threading.Thread(target=thread_travel, args=(bilibili_id, item, 1))
             threads.append(thread)
             thread.start()
-    if game_info[1] is not None:
-        print("斗鱼正在遍历游戏：" + game_name)
-        douyu_id_list = game_info[1].split(',')
-        for douyu_id in douyu_id_list:
-            # 创建多线程，启动，遍历
-            thread = threading.Thread(target=thread_travel,args=(douyu_id, item, 2))
-            threads.append(thread)
-            thread.start()
-    if game_info[2] is not None:
-        print("虎牙正在遍历游戏：" + game_name)
-        huya_id_list = game_info[2].split(',')
-        for huya_id in huya_id_list:
-            # 创建多线程，启动，遍历
-            thread = threading.Thread(target=thread_travel, args=(huya_id, item, 3))
-            threads.append(thread)
-            thread.start()
+    # if game_info[1] is not None:
+    #     print("斗鱼正在遍历游戏：" + game_name)
+    #     douyu_id_list = game_info[1].split(',')
+    #     for douyu_id in douyu_id_list:
+    #         # 创建多线程，启动，遍历
+    #         thread = threading.Thread(target=thread_travel,args=(douyu_id, item, 2))
+    #         threads.append(thread)
+    #         thread.start()
+    # if game_info[2] is not None:
+    #     print("虎牙正在遍历游戏：" + game_name)
+    #     huya_id_list = game_info[2].split(',')
+    #     for huya_id in huya_id_list:
+    #         # 创建多线程，启动，遍历
+    #         thread = threading.Thread(target=thread_travel, args=(huya_id, item, 3))
+    #         threads.append(thread)
+    #         thread.start()
     for i in range(len(threads)):
         threads[i].join()
 
-    # douyu验错机制
-    if item['huya'] > 100:
-        limit = (90 / (item['huya'] / 10000 + 4)) * item['huya']
-        if item['douyu'] > limit:
-            pre_data = item['douyu']
-            item['douyu'] = limit
-            filename = os.path.dirname(__file__) + "/douyuerror.txt"
-            with open(filename, "a") as f:
-                f.write("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "][" + str(game_id) + "]" + game_name +
-                        "数据有误，修正前数据为：" + str(pre_data) + ", 修正后数据为：" + str(item['douyu']) + "\n")
+    # # douyu验错机制
+    # if item['huya'] > 100:
+    #     limit = (90 / (item['huya'] / 10000 + 4)) * item['huya']
+    #     if item['douyu'] > limit:
+    #         pre_data = item['douyu']
+    #         item['douyu'] = limit
+    #         filename = os.path.dirname(__file__) + "/douyuerror.txt"
+    #         with open(filename, "a") as f:
+    #             f.write("[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "][" + str(game_id) + "]" + game_name +
+    #                     "数据有误，修正前数据为：" + str(pre_data) + ", 修正后数据为：" + str(item['douyu']) + "\n")
 
     bili_total += item['bilibili']
     douyu_total += item['douyu']
